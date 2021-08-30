@@ -16,6 +16,37 @@ const routes = [{
         component: () =>
             import ("@/views/About.vue"),
     },
+    {
+        path: "/qrcode",
+        name: "qrcode",
+        component: () =>
+            import ("@/views/QRcode.vue"),
+    },
+    {
+        path: "/field",
+        name: "field",
+        component: () =>
+            import ("@/views/field.vue"),
+    },
+    {
+        path: "/fieldList",
+        name: "fieldList",
+        component: () =>
+            import ("@/views/fieldList.vue"),
+    },
+
+    {
+        path: "/siguUp",
+        name: "siguUp",
+        component: () =>
+            import ("@/views/siguUp.vue"),
+    },
+    {
+        path: "/ranksList",
+        name: "ranksList",
+        component: () =>
+            import ("@/views/ranksList.vue"),
+    },
 ];
 
 const router = createRouter({

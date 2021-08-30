@@ -5,10 +5,9 @@ import store from "./store";
 import Vant from 'vant';
 import 'vant/lib/index.css';
 
-
-
 createApp(App)
     .use(Vant)
     .use(store)
     .use(router)
-    .mount("#app");
+
+.mount("#app");

@@ -7,6 +7,7 @@
 
         <div class="home-box-con-box">
           <div
+            @click="toabout(index)"
             class="con-box"
             v-for="(it, index) in boxlist"
             :style="{ background: it.color }"
@@ -16,19 +17,7 @@
             <img class="con-box-img" :src="it.url" />
           </div>
         </div>
-      </div>
-
-      <div>
-        <!-- 内容部分 -->
-        <video id="qr-vedio" class="v" autoplay=""></video>
-        <canvas
-          id="qr-canvas"
-          width="800"
-          height="600"
-          style="width: 800px; height: 600px; display: none"
-        ></canvas>
-        <p v-show="result != ''">{{ result }}</p>
-        <p v-show="errorMes != ''">{{ errorMes }}</p>
+        <video ref="viId"></video>
       </div>
     </div>
   </div>
@@ -42,7 +31,10 @@ import { useStore } from "vuex";
 // import { qrcanvas } from "qrcanvas";
 export default {
   name: "Home",
-  mounted() {},
+  mounted() {
+    const getid = this.$refs.viId;
+    console.log("getid", getid);
+  },
 
   setup() {
     let store = useStore();
@@ -79,8 +71,12 @@ export default {
     const from = toRefs(fromConfig);
 
     const router = useRouter();
-    const toabout = () => {
-      router.push("/about");
+    const toabout = (index) => {
+      if (index == 0) {
+        router.push("/fieldList");
+      } else if (index == 5) {
+        router.push("/qrcode");
+      }
     };
 
     return { ...from, toabout };
@@ -130,12 +126,12 @@ export default {
       height: 190px;
     }
     .home-box-con-box {
-      // width: 100%;
+      width: 354px;
       // height: 206px;
       // background: #dff9fb;
       display: flex;
       flex-wrap: wrap;
-      margin: 0 0 0 4px;
+      margin: 0 0 0 -11px;
       .con-box {
         margin: 15px 0 0 11px;
         width: 107px;
