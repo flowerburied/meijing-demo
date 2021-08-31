@@ -28,6 +28,7 @@
 import { reactive, toRefs, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import api from "../api/api.js";
 // import { qrcanvas } from "qrcanvas";
 export default {
   name: "Home",
@@ -49,6 +50,7 @@ export default {
       //   document.getElementById("qrcode").innerHTML = "";
       //   document.getElementById("qrcode").appendChild(canvas);
       // });
+      getCodeApi();
     });
 
     const fromConfig = reactive({
@@ -77,6 +79,56 @@ export default {
       } else if (index == 5) {
         router.push("/qrcode");
       }
+    };
+
+    const getCodeApi = () => {
+      //获取code
+      let iftrue = localStorage.getItem("iftrue");
+      if (!iftrue) {
+        let urlNow = encodeURIComponent(window.location.href);
+        let scope = "snsapi_base"; //snsapi_userinfo   //静默授权 用户无感知
+        let appid = "wxcdbcf002a88b179c";
+        let url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${urlNow}&response_type=code&scope=${scope}&state=STATE#wechat_redirect`;
+        window.location.replace(url);
+        localStorage.setItem("iftrue", true);
+      } else {
+        getUrlKey();
+      }
+    };
+
+    const getUrlVars = () => {
+      var vars = [],
+        hash;
+      var hashes = window.location.href
+        .slice(window.location.href.indexOf("?") + 1)
+        .split("&");
+      for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split("=");
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+      }
+      return vars;
+    };
+
+    const getUrlKey = () => {
+      let list = getUrlVars();
+      let code = list.code;
+      // this.myCode = code;
+      localStorage.setItem("code", code);
+
+      localStorage.removeItem("iftrue");
+
+      tosign();
+    };
+    const tosign = () => {
+      // console.log(this.myCode);
+      let code = localStorage.getItem("code");
+      let option = {
+        jscode: code,
+      };
+      const res = api.field.GetOpenid(option);
+      console.log("res", res);
+      localStorage.setItem("openid", res.data.openid);
     };
 
     return { ...from, toabout };
