@@ -12,21 +12,39 @@
       </div>
 
       <div class="home-box-con">
-        <div class="fie-list-box">
+        <!-- <div class="fie-list-box">
+
           <div class="fie-list-box-list" @click="tolist">
             <div class="box-list-title">舞蹈室</div>
             <div class="box-list-time">活动时间：2021年7月16日-9月30日</div>
           </div>
           <img class="fie-list-box-img" src="../assets/to-arrow.png" />
-        </div>
+        </div> -->
 
-        <div class="fie-list-box fiex-top" >
+        <!-- <div class="fie-list-box fiex-top" >
           <div class="fie-list-box-list">
             <div class="box-list-title">书法室</div>
             <div class="box-list-time">活动时间：2021年7月16日-9月30日</div>
           </div>
           <img class="fie-list-box-img" src="../assets/to-arrow.png" />
-        </div>
+        </div> -->
+        <!-- <van-button disabled type="primary">禁用状态</van-button> -->
+        <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+          <van-list
+            v-model:loading="loading"
+            :finished="finished"
+            finished-text="没有更多了"
+            @load="onLoad"
+          >
+            <div class="fie-list-box">
+              <div class="fie-list-box-list" @click="tolist">
+                <div class="box-list-title">舞蹈室</div>
+                <div class="box-list-time">活动时间：2021年7月16日-9月30日</div>
+              </div>
+              <img class="fie-list-box-img" src="../assets/to-arrow.png" />
+            </div>
+          </van-list>
+        </van-pull-refresh>
       </div>
     </div>
   </div>
@@ -34,39 +52,24 @@
 
 <script>
 // nextTick
-import { reactive, toRefs, onMounted } from "vue";
+import { ref, onMounted, getCurrentInstance } from "vue";
 import { useRouter } from "vue-router";
 // import { useStore } from "vuex";
 // import { qrcanvas } from "qrcanvas";
+import api from "../api/api.js";
 export default {
   name: "field",
   setup() {
-    onMounted(() => {});
-
-    const fromConfig = reactive({
-      boxlist: [
-        { name: "场地列表", color: "#F9C26F", url: require("@/assets/01.png") },
-        { name: "村委动态", color: "#B9D76D", url: require("@/assets/02.png") },
-        { name: "村民福利", color: "#6BCAC6", url: require("@/assets/03.png") },
-        { name: "志愿活动", color: "#66C5F2", url: require("@/assets/04.png") },
-        { name: "文体队伍", color: "#AA89BD", url: require("@/assets/05.png") },
-        { name: "社交活动", color: "#EC8989", url: require("@/assets/06.png") },
-      ],
-      vedio: "",
-      canvas: "",
-      context: "",
-      stopScan: null,
-      errorMes: "",
-      result: "",
+    onMounted(() => {
+      getfun();
     });
 
-    const from = toRefs(fromConfig);
-
+    // proxy相当于vue2的this对象
+    const { proxy } = getCurrentInstance();
+    console.log("proxy", proxy);
     const router = useRouter();
     const tolist = () => {
-
-        router.push("/field");
- 
+      router.push("/field");
     };
 
     const goback = () => {
@@ -74,8 +77,48 @@ export default {
       router.go(-1);
     };
 
+    const list = ref([]);
+    const loading = ref(false);
+    const finished = ref(false);
+    const refreshing = ref(false);
 
-    return { ...from, tolist, goback };
+    const onLoad = () => {
+      setTimeout(() => {
+        if (refreshing.value) {
+          list.value = [];
+          refreshing.value = false;
+        }
+
+        for (let i = 0; i < 10; i++) {
+          list.value.push(list.value.length + 1);
+        }
+        loading.value = false;
+
+        if (list.value.length >= 40) {
+          finished.value = true;
+        }
+      }, 1000);
+    };
+
+    const onRefresh = () => {
+      // 清空列表数据
+      finished.value = false;
+
+      // 重新加载数据
+      // 将 loading 设置为 true，表示处于加载状态
+      loading.value = true;
+      onLoad();
+    };
+
+    const getfun = () => {
+      let option = {
+        page: 1,
+        size: 5,
+      };
+      const res = api.field.getPlaceList(option);
+      console.log("res", res);
+    };
+    return { list, onLoad, loading, finished, onRefresh, refreshing, tolist, goback };
   },
 };
 </script>
@@ -131,6 +174,7 @@ export default {
     display: none; //隐藏滚动条
   }
   .home-box-con {
+    margin-top: 52px;
     z-index: 1003;
     position: absolute;
     width: 100%;
@@ -143,7 +187,7 @@ export default {
 
     .fie-list-box {
       background: #ffffff;
-      margin-top: 52px;
+      //   margin-top: 52px;
       width: 345px;
       border-radius: 5px;
       display: flex;
@@ -176,8 +220,8 @@ export default {
         }
       }
     }
-    .fiex-top{
-        margin-top: 15px;
+    .fiex-top {
+      margin-top: 15px;
     }
   }
 }
