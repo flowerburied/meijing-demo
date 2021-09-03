@@ -126,6 +126,7 @@ export default {
       let option = {
         jscode: code,
       };
+      console.log("option",option)
       const res = api.field.GetOpenid(option);
       console.log("res", res);
       localStorage.setItem("openid", res.data.openid);
