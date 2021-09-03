@@ -86,7 +86,7 @@ export default {
       let iftrue = localStorage.getItem("iftrue");
       if (!iftrue) {
         let urlNow = encodeURIComponent(window.location.href);
-        let scope = "snsapi_base"; //snsapi_userinfo   //静默授权 用户无感知
+        let scope = "snsapi_userinfo"; //snsapi_userinfo   //静默授权 用户无感知
         let appid = "wxcdbcf002a88b179c";
         let url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${urlNow}&response_type=code&scope=${scope}&state=STATE#wechat_redirect`;
         window.location.replace(url);
@@ -120,16 +120,29 @@ export default {
 
       tosign();
     };
-    const tosign = () => {
-      // console.log(this.myCode);
-      let code = localStorage.getItem("code");
-      let option = {
-        jscode: code,
-      };
-      console.log("option",option)
-      const res = api.field.GetOpenid(option);
-      console.log("res", res);
-      localStorage.setItem("openid", res.data.openid);
+    const tosign = async () => {
+      try {
+        // console.log(this.myCode);
+        let code = localStorage.getItem("code");
+        let option = {
+          jscode: code,
+        };
+        console.log("option", option);
+        const res = await api.field.GetOpenid(option);
+        console.log("res", res);
+        localStorage.setItem("openid", res.data.openid);
+
+        const { getcode } = res;
+        if (getcode == 200) {
+          console.log("通过");
+        } else if (getcode == 500) {
+          console.log("错误 ");
+        } else if (getcode == 404) {
+          console.log("没有绑定身份证信息");
+        }
+      } catch (e) {
+        console.log(e);
+      }
     };
 
     return { ...from, toabout };
