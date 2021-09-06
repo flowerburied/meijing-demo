@@ -17,6 +17,31 @@ let field = {
             data: qs.stringify(data)
         })
     },
+    // 登录
+    Login(data) {
+        return axios({
+            url: '/H5/Login',
+            method: 'post',
+            data: qs.stringify(data)
+        })
+    },
+    // 录入居民信息
+    CreateResidentInfo(data) {
+        return axios({
+            url: '/H5/CreateResidentInfo',
+            method: 'post',
+            data: qs.stringify(data)
+        })
+    },
+    // 获取小区或村落
+    Getvillage(data) {
+        return axios({
+            url: '/H5/Getvillage',
+            method: 'post',
+            data: qs.stringify(data)
+        })
+    },
+
 }
 
 export default field

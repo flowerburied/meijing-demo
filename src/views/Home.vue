@@ -1,7 +1,28 @@
 <template>
   <div class="home">
     <div class="home-box">
-      <div class="home-box-bg"></div>
+      <!-- v-if="isregister" -->
+      <div class="home-box-bg">
+        <van-form @failed="onfailed" @submit="onSubmit">
+          <div class="box-bg-title">请输入身份证完成注册</div>
+
+          <van-cell-group inset>
+            <van-field
+              v-model="username"
+              name="id_card"
+              label="身份证"
+              placeholder="身份证"
+              :rules="[{ pattern, message: '请填写身份证' }]"
+            />
+          </van-cell-group>
+          <div style="margin: 16px">
+            <van-button round block type="primary" native-type="submit">
+              提交
+            </van-button>
+          </div>
+        </van-form>
+      </div>
+
       <div class="home-box-con">
         <img class="home-box-con-img" src="../assets/weel.png" />
 
@@ -29,6 +50,8 @@ import { reactive, toRefs, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import api from "../api/api.js";
+import { Notify } from "vant";
+import { Dialog } from "vant";
 // import { qrcanvas } from "qrcanvas";
 export default {
   name: "Home",
@@ -52,7 +75,9 @@ export default {
       // });
       getCodeApi();
     });
-
+    // const username = "";
+    const pattern =/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+    // const isregister = ref("");
     const fromConfig = reactive({
       boxlist: [
         { name: "场地列表", color: "#F9C26F", url: require("@/assets/01.png") },
@@ -68,6 +93,9 @@ export default {
       stopScan: null,
       errorMes: "",
       result: "",
+      isregister: true,
+      id_card: /\d{6}/,
+      username: "",
     });
 
     const from = toRefs(fromConfig);
@@ -123,29 +151,67 @@ export default {
     const tosign = async () => {
       try {
         // console.log(this.myCode);
-        let code = localStorage.getItem("code");
+        let code1 = localStorage.getItem("code");
         let option = {
-          jscode: code,
+          jscode: code1,
         };
         console.log("option", option);
         const res = await api.field.GetOpenid(option);
         console.log("res", res);
-        localStorage.setItem("openid", res.data.openid);
+        localStorage.setItem("openid", res.data.data);
 
-        const { getcode } = res;
-        if (getcode == 200) {
+        const { code } = res.data;
+        if (code == 200) {
           console.log("通过");
-        } else if (getcode == 500) {
+          fromConfig.isregister = false;
+        } else if (code == 500) {
           console.log("错误 ");
-        } else if (getcode == 404) {
+          fromConfig.isregister = true;
+        } else if (code == 404) {
           console.log("没有绑定身份证信息");
+          fromConfig.isregister = true;
         }
       } catch (e) {
         console.log(e);
       }
     };
 
-    return { ...from, toabout };
+    const onSubmit = (values) => {
+      console.log("submit", values);
+      toLogin(values.id_card);
+    };
+    const onfailed = (errorInfo) => {
+      console.log("failed", errorInfo);
+    };
+
+    const toLogin = async (id_card) => {
+      try {
+        // console.log(this.myCode);
+        let code1 = localStorage.getItem("openid");
+        let option = {
+          openid: code1,
+          id_card: id_card,
+        };
+        console.log("option", option);
+        const res = await api.field.Login(option);
+        console.log("res", res);
+        // localStorage.setItem("openid", res.data.openid);
+
+        const { code } = res.data;
+        if (code == 200) {
+          console.log("通过");
+          fromConfig.isregister = false;
+          Notify({ type: "success", message: "提交成功" });
+        } else {
+          Dialog({ message: "请联系社区,录入居民信息" });
+          // Notify({ type: "danger", message: "请联系社区,录入居民信息" });
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    return { ...from, toabout, onSubmit,onfailed, pattern };
   },
 };
 </script>
@@ -167,15 +233,30 @@ export default {
     position: relative;
   }
   .home-box-bg {
+    z-index: 5;
     position: fixed;
     width: 100%;
     height: 100vh;
-    // background: #f6e58d;
+    background: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .box-bg-input {
+      width: 345px;
+      height: 200px;
+      background: #ffffff;
+      border-radius: 4px;
+    }
+    .box-bg-title {
+      padding: 20px;
+    }
   }
+
   .home-box-con::-webkit-scrollbar {
     display: none; //隐藏滚动条
   }
   .home-box-con {
+    z-index: 4;
     position: absolute;
     width: 100%;
     height: 100vh;

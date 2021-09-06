@@ -1,8 +1,8 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHashHistory, createWebHistory } from "vue-router";
 // import Home from "../views/Home.vue";
 
 const routes = [{
-        path: "/",
+        path: "/Home",
         name: "Home",
         component: () =>
             import ("@/views/Home.vue"),
@@ -47,10 +47,16 @@ const routes = [{
         component: () =>
             import ("@/views/ranksList.vue"),
     },
+    {
+        path: "/volunteer",
+        name: "volunteer",
+        component: () =>
+            import ("@/views/volunteer.vue"),
+    },
 ];
 
 const router = createRouter({
-    history: createWebHashHistory(), //带#号
+    history: createWebHistory(), //带#号
     // createWebHistory  //不带#号
     routes,
 });
