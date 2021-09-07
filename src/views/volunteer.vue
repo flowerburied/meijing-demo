@@ -44,11 +44,22 @@
             />
             <van-field
               v-model="sex"
+              is-link
+              readonly
               name="sex"
               label="性别"
               placeholder="性别"
-              :rules="[{ required: true, message: '请填写性别' }]"
+              :rules="[{ required: true, message: '请选择性别', trigger: 'change' }]"
+              @click="showSex = true"
             />
+            <van-popup v-model:show="showSex" position="bottom">
+              <van-picker
+                :columns="columnsSex"
+                @confirm="onConSex"
+                @cancel="showSex = false"
+              />
+            </van-popup>
+
             <van-field
               v-model="id_card"
               name="id_card"
@@ -72,6 +83,9 @@
               label="家庭住址"
               placeholder="请选择区或者村落"
               @click="showPicker = true"
+              :rules="[
+                { required: true, message: '请选择区或者村落', trigger: 'change' },
+              ]"
             />
             <van-popup v-model:show="showPicker" position="bottom">
               <van-picker
@@ -120,7 +134,7 @@ export default {
     console.log("proxy", proxy);
     const fromConfig = reactive({
       isregister: true,
-      columns: ["杭州", "宁波", "温州", "嘉兴", "湖州"],
+      columns: [],
       showPicker: false,
       result: "",
       username: "",
@@ -131,6 +145,8 @@ export default {
       phone: "",
       address: "",
       addressnum: "",
+      showSex: false,
+      columnsSex: ["男", "女"],
     });
 
     const from = toRefs(fromConfig);
@@ -199,6 +215,12 @@ export default {
       fromConfig.address = value;
       fromConfig.showPicker = false;
     };
+
+    const onConSex = (value) => {
+      fromConfig.sex = value;
+      fromConfig.showSex = false;
+    };
+
     const verCode = (values) => {
       console.log("verCode", values);
       if (values.id_card == "6688") {
@@ -213,6 +235,7 @@ export default {
       ...from,
       onSubmit,
       onConfirm,
+      onConSex,
       verCode,
     };
   },

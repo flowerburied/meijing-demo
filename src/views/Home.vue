@@ -2,7 +2,7 @@
   <div class="home">
     <div class="home-box">
       <!-- v-if="isregister" -->
-      <div class="home-box-bg">
+      <div class="home-box-bg" v-if="isregister">
         <van-form @failed="onfailed" @submit="onSubmit">
           <div class="box-bg-title">请输入身份证完成注册</div>
 
