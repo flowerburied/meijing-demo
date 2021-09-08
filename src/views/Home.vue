@@ -3,6 +3,7 @@
     <div class="home-box">
       <!-- v-if="isregister" -->
       <div class="home-box-bg" v-if="isregister">
+        <img class="field-box-img" src="../assets/bg.png" />
         <van-form @failed="onfailed" @submit="onSubmit">
           <div class="box-bg-title">请输入身份证完成注册</div>
 
@@ -76,7 +77,7 @@ export default {
       getCodeApi();
     });
     // const username = "";
-    const pattern =/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+    const pattern = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
     // const isregister = ref("");
     const fromConfig = reactive({
       boxlist: [
@@ -211,7 +212,7 @@ export default {
       }
     };
 
-    return { ...from, toabout, onSubmit,onfailed, pattern };
+    return { ...from, toabout, onSubmit, onfailed, pattern };
   },
 };
 </script>
@@ -233,6 +234,7 @@ export default {
     position: relative;
   }
   .home-box-bg {
+    // background-image: url("../assets/weel.png");
     z-index: 5;
     position: fixed;
     width: 100%;
@@ -241,6 +243,12 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+
+    .field-box-img {
+      position: absolute;
+      width: 100%;
+      height: 100vh;
+    }
     .box-bg-input {
       width: 345px;
       height: 200px;

@@ -262,6 +262,7 @@ export default {
   }
 
   .home-box-bg {
+    // background-image: url(../assets/weel.png);
     z-index: 1100;
     position: fixed;
     width: 100%;
